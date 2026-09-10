@@ -33,14 +33,17 @@ def run_pdf_research_pipeline(pdf_path,topic=None):
     return state
 
 if __name__=="__main__":
-    mode=input("1.Online 2.PDF : ")
-    if mode=="2":
-        pdf=input("PDF path: ")
-        topic=input("Focus (Enter for summary): ").strip() or None
-        out=run_pdf_research_pipeline(pdf,topic)
-    else:
-        topic=input("Topic: ")
-        out=run_research_pipeline(topic)
-    print(out["report"])
-    print("\\n--- FEEDBACK ---\\n")
-    print(out["feedback"])
+    while True:
+        mode=input("1.Online 2.PDF : ")
+        if mode == "exit":
+            break
+        if mode=="2":
+            pdf=input("PDF path: ")
+            topic=input("Focus (Enter for summary): ").strip() or None
+            out=run_pdf_research_pipeline(pdf,topic)
+        else:
+            topic=input("Topic: ")
+            out=run_research_pipeline(topic)
+        print(out["report"])
+        print("\\n--- FEEDBACK ---\\n")
+        print(out["feedback"])

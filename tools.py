@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from tavily import TavilyClient
 
+
 from langchain.tools import tool
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -69,3 +70,26 @@ def get_full_pdf_summary_context(max_chunks=15):
     return "\n\n-----\n\n".join(
         f"[Page {d.metadata.get('page','?')}]\n{d.page_content}" for d in docs
     )
+from agents import rag_chain
+
+@tool
+def rag_search(question: str) -> str:
+    global _vectorstore
+
+    if _vectorstore is None:
+        return "No PDF loaded."
+
+    docs = _vectorstore.similarity_search(question, k=5)
+
+    context = "\n\n".join(
+        d.page_content for d in docs
+    )
+
+    answer = rag_chain.invoke({
+        "question": question,
+        "context": context
+    })
+
+    return answer
+
+    

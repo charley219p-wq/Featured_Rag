@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 import os
 
-from tools import web_search,scrape_url,pdf_search
+from tools import web_search,scrape_url,pdf_search, rag_search
 
 llm = ChatOpenAI(
 api_key=os.getenv("GENAI_API_KEY"),
@@ -25,6 +25,11 @@ def build_reader_agent():
 
 def build_pdf_agent():
     return create_agent(model=llm,tools=[pdf_search])
+
+def build_rag_agent():
+    return create_agent(model=llm,tools=[rag_search])
+
+
 
 writer_prompt=ChatPromptTemplate.from_messages([
 ("system","You are an expert research writer."),
@@ -65,6 +70,33 @@ Areas to Improve:
 Verdict:""")
 ])
 
+
+rag_prompt = ChatPromptTemplate.from_messages(
+[
+    (
+        "system",
+        """
+        You are a helpful AI assistant.
+        Use only the provided context.
+        """
+    ),
+    (
+        "human",
+        """
+        Context:
+        {context}
+
+        Question:
+        {question}
+        """
+    )
+]
+)
+
+
+
+
 writer_chain=writer_prompt|llm|StrOutputParser()
 pdf_writer_chain=pdf_writer_prompt|llm|StrOutputParser()
 critic_chain=critic_prompt|llm|StrOutputParser()
+rag_chain=rag_prompt|llm|StrOutputParser()
